@@ -129,6 +129,23 @@
       background: transparent;
       white-space: pre-wrap;
       word-wrap: break-word;
+      position: relative;
+    }
+    
+    /* Pseudo cursor */
+    .pseudo-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: #5a5a6b;
+      animation: cursor-blink 1s infinite;
+      vertical-align: text-bottom;
+      margin: 0 1px;
+    }
+    
+    @keyframes cursor-blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
     }
     
     /* Hide mobile keyboard completely */
@@ -233,6 +250,7 @@
         // Re-add readonly immediately to prevent keyboard
         setTimeout(() => {
           editor.setAttribute('readonly', 'readonly');
+          updateDisplay(); // Refresh cursor display
         }, 10);
       });
       
@@ -249,33 +267,66 @@
       
       const keys = Array.from(document.querySelectorAll('.key'));
 
+      // Pseudo cursor management
+      let cursorPosition = 0;
+      
+      function updateDisplay() {
+        const text = editor.textContent || '';
+        const beforeCursor = text.substring(0, cursorPosition);
+        const afterCursor = text.substring(cursorPosition);
+        
+        // Create display with pseudo cursor
+        editor.innerHTML = '';
+        
+        if (beforeCursor) {
+          const beforeSpan = document.createElement('span');
+          beforeSpan.textContent = beforeCursor;
+          editor.appendChild(beforeSpan);
+        }
+        
+        // Add pseudo cursor
+        const cursor = document.createElement('span');
+        cursor.className = 'pseudo-cursor';
+        editor.appendChild(cursor);
+        
+        if (afterCursor) {
+          const afterSpan = document.createElement('span');
+          afterSpan.textContent = afterCursor;
+          editor.appendChild(afterSpan);
+        }
+        
+        // If editor is empty, show cursor
+        if (!text) {
+          editor.appendChild(cursor);
+        }
+      }
+
       function placeCaretAtEnd(el){
-        el.focus();
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
+        const text = el.textContent || '';
+        cursorPosition = text.length;
+        updateDisplay();
       }
 
       function appendText(t){
-        // simple append to end
-        editor.textContent = (editor.textContent || '') + t;
-        placeCaretAtEnd(editor);
+        const currentText = editor.textContent || '';
+        const newText = currentText.substring(0, cursorPosition) + t + currentText.substring(cursorPosition);
+        editor.textContent = newText;
+        cursorPosition += t.length;
+        updateDisplay();
       }
 
       function backspace(){
-        const s = editor.textContent || '';
-        editor.textContent = s.slice(0, -1);
-        placeCaretAtEnd(editor);
+        if (cursorPosition > 0) {
+          const currentText = editor.textContent || '';
+          const newText = currentText.substring(0, cursorPosition - 1) + currentText.substring(cursorPosition);
+          editor.textContent = newText;
+          cursorPosition--;
+          updateDisplay();
+        }
       }
 
       function insertLineBreak(){
-        // Simple and reliable line break insertion
-        const currentText = editor.textContent || '';
-        editor.textContent = currentText + '\n';
-        placeCaretAtEnd(editor);
+        appendText('\n');
       }
 
       // Pointer-based flick detection
@@ -333,9 +384,14 @@
         k.addEventListener('pointercancel', ()=> start = null);
       });
 
+      // Initialize pseudo cursor
+      const initialText = editor.textContent || 'こんにちは';
+      editor.textContent = initialText;
+      cursorPosition = initialText.length;
+      updateDisplay();
+      
       // Ensure editor initially focused so typing works
       editor.removeAttribute('readonly');
-      placeCaretAtEnd(editor);
       setTimeout(() => {
         editor.setAttribute('readonly', 'readonly');
       }, 50);
