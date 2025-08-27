@@ -444,7 +444,7 @@
         });
 
         k.addEventListener('pointerup', async e => {
-          if (!start) return;
+          if(!start) return;
 
           hideFlickUI();
 
@@ -457,14 +457,13 @@
 
           let didInput = false;
 
-          // Action buttons still respond to taps
-          if (action) {
-            switch (action) {
+          if(action){
+            switch(action){
               case 'backspace': backspace(); didInput = true; break;
               case 'space': appendText(' '); didInput = true; break;
               case 'enter': insertLineBreak(); didInput = true; break;
-              case 'emoji': appendText('\ud83d\ude0a'); didInput = true; break;
-              case 'punct': appendText('\u3001'); didInput = true; break;
+              case 'emoji': appendText('😊'); didInput = true; break;
+              case 'punct': appendText('、'); didInput = true; break;
               default: break;
             }
             start = null;
@@ -472,29 +471,21 @@
             return;
           }
 
-          // For kana keys: ignore plain taps. Require a flick (movement >= threshold).
-          if (kana) {
-            if (Math.max(adx, ady) < threshold) {
-              // Tap only: do nothing
-              start = null;
-              return;
+          if(kana){
+            const parts = kana.split(',').map(s=>s.trim()).filter(Boolean);
+            let idx = 0; // tap
+            if(Math.max(adx, ady) >= threshold){
+              if(adx > ady) idx = dx > 0 ? 2 : 4; // right : left
+              else          idx = dy < 0 ? 1 : 3; // up : down
             }
-
-            const parts = kana.split(',').map(s => s.trim()).filter(Boolean);
-            let idx = 0;
-            if (adx > ady) idx = dx > 0 ? 2 : 4; // right : left
-            else           idx = dy < 0 ? 1 : 3; // up : down
-            if (idx >= parts.length) idx = Math.min(parts.length - 1, idx);
+            if(idx >= parts.length) idx = Math.min(parts.length-1, idx);
             const char = parts[idx] || parts[0];
             appendText(char);
             didInput = true;
           } else {
-            // Non-kana text keys: also require flick to input
-            if (Math.max(adx, ady) < threshold) { start = null; return; }
             const text = k.textContent.trim();
-            if (text) { appendText(text); didInput = true; }
+            if(text){ appendText(text); didInput = true; }
           }
-
           start = null;
           if (didInput) { await triggerHaptic(); }
         });
