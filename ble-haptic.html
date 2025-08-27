@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Haptic Control</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 24px; }
+  button { font-size: 16px; padding: 10px 14px; margin: 6px; }
+  #log { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 160px; overflow:auto; }
+</style>
+
+<h1>M5 Haptic (Web Bluetooth)</h1>
+<p>
+  <button id="btnConnect">🔗 Connect</button>
+  <button id="btnPulse">💥 Pulse 200ms</button>
+  <button id="btnOn">▶️ ON</button>
+  <button id="btnOff">⏹ OFF</button>
+</p>
+<div id="log"></div>
+
+<script>
+  const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+  const RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // write
+  const TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // notify (optional)
+
+  let device, server, service, rxChar, txChar;
+
+  const log = (...args) => {
+    const el = document.getElementById('log');
+    el.textContent += args.join(' ') + '\n';
+    el.scrollTop = el.scrollHeight;
+    console.log(...args);
+  };
+
+  async function connect() {
+    try {
+      // ✅ 修正: filters か acceptAllDevices のどちらかだけを使う
+      device = await navigator.bluetooth.requestDevice({
+        filters: [{ namePrefix: 'M5-' }],   // ← M5-Haptic だけ出す
+        optionalServices: [SERVICE_UUID]
+      });
+
+      device.addEventListener('gattserverdisconnected', () => log('💔 Disconnected'));
+
+      server  = await device.gatt.connect();
+      service = await server.getPrimaryService(SERVICE_UUID);
+      rxChar  = await service.getCharacteristic(RX_UUID);
+
+      try {
+        txChar  = await service.getCharacteristic(TX_UUID);
+        await txChar.startNotifications();
+        txChar.addEventListener('characteristicvaluechanged', (e) => {
+          const v = new TextDecoder().decode(e.target.value);
+          log('🔔 Notify:', v);
+        });
+      } catch (_) { /* TX notify が無い場合は無視 */ }
+
+      log('✅ Connected');
+    } catch (e) {
+      log('❌', e.message || e);
+    }
+  }
+
+  async function send(cmd) {
+    if (!rxChar) { log('⚠️ Not connected'); return; }
+    const data = new TextEncoder().encode(cmd);
+    try {
+      await rxChar.writeValueWithoutResponse(data);
+      log('➡️ Send:', cmd);
+    } catch (e) {
+      try {
+        await rxChar.writeValue(data);
+        log('➡️ Send (ack):', cmd);
+      } catch (err) {
+        log('❌ write failed:', err.message || err);
+      }
+    }
+  }
+
+  document.getElementById('btnConnect').onclick = connect;
+  document.getElementById('btnPulse').onclick   = () => send('P200');
+  document.getElementById('btnOn').onclick      = () => send('ON');
+  document.getElementById('btnOff').onclick     = () => send('OFF');
+</script>
