@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
   <title>Prototype</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -37,8 +39,32 @@
     @media (max-width:420px) {
       .keyboard-fixed .grid > button, .keyboard-fixed .grid > div { min-width: 44px; }
     }
-    .home-indicator { height: 6px; width: 140px; max-width: 34vw; background: rgba(0,0,0,0.18); border-radius: 999px; }
     .bottom-icon { width: 40px; height: 40px; }
+    
+    /* Prevent mobile keyboard from appearing */
+    #editor {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+      caret-color: transparent;
+    }
+    
+    /* Hide mobile keyboard completely */
+    input[readonly], textarea[readonly] {
+      pointer-events: none;
+    }
+    
+    @media (max-width: 768px) {
+      #editor {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-white">
@@ -89,7 +115,7 @@
          <!-- left column row4 -->
         <button class="h-14 rounded-xl bg-neutral-300 key text-2xl" data-action="emoji">😊</button>
         <!-- row 4 -->
-        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="^">^_^</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="^_^">^_^</button>
         <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="わ,を,ん">わ</button>
         <button class="h-14 rounded-xl bg-white key text-xl" data-action="punct">、？！</button>
 
@@ -99,16 +125,10 @@
       <div class="mx-2 mt-2">
         <div class="flex items-center justify-between px-2">
           <button aria-label="language" class="rounded-full bg-transparent grid place-items-center text-xl bottom-icon" style="padding:6px">
-            <!-- globe svg -->
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/></svg>
           </button>
 
-        <div class="grid place-items-center" style="flex:1">
-            <div class="home-indicator"></div>
-          </div>
-
-        <button aria-label="mic" class="rounded-full bg-transparent grid place-items-center text-xl bottom-icon" style="padding:6px">
-            <!-- mic svg -->
+          <button aria-label="mic" class="rounded-full bg-transparent grid place-items-center text-xl bottom-icon" style="padding:6px">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v11"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 21v2"/></svg>
           </button>
         </div>
@@ -121,7 +141,33 @@
       const editor = document.getElementById('editor');
       if(!editor) return;
       editor.setAttribute('role','textbox');
-      editor.addEventListener('click', ()=> editor.focus());
+      
+      // Prevent mobile keyboard from appearing
+      editor.setAttribute('readonly', 'readonly');
+      editor.setAttribute('inputmode', 'none');
+      editor.style.caretColor = 'transparent';
+      
+      // Remove readonly when clicking to allow contenteditable functionality
+      editor.addEventListener('click', ()=> {
+        editor.removeAttribute('readonly');
+        editor.focus();
+        // Re-add readonly immediately to prevent keyboard
+        setTimeout(() => {
+          editor.setAttribute('readonly', 'readonly');
+        }, 10);
+      });
+      
+      // Prevent default keyboard events
+      editor.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        return false;
+      });
+      
+      editor.addEventListener('input', (e) => {
+        e.preventDefault();
+        return false;
+      });
+      
       const keys = Array.from(document.querySelectorAll('.key'));
 
       function placeCaretAtEnd(el){
@@ -245,7 +291,11 @@
       });
 
       // Ensure editor initially focused so typing works
+      editor.removeAttribute('readonly');
       placeCaretAtEnd(editor);
+      setTimeout(() => {
+        editor.setAttribute('readonly', 'readonly');
+      }, 50);
     })();
   </script>
 
