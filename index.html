@@ -25,8 +25,6 @@
       --neumorphism-shadow-light: rgba(255, 255, 255, 0.7);
       --neumorphism-shadow-dark: rgba(174, 174, 192, 0.4);
     }
-    
-    /* Neumorphism inset button style for all keys - stronger inset effect and circular */
     .key {
       background: var(--neumorphism-bg);
       box-shadow: 
@@ -42,7 +40,6 @@
       align-items: center;
       justify-content: center;
     }
-    
     .key:active { 
       background: #5a5a6b;
       color: var(--neumorphism-bg);
@@ -50,209 +47,73 @@
         4px 4px 8px var(--neumorphism-shadow-dark),
         -4px -4px 8px var(--neumorphism-shadow-light);
     }
-    
     .key:hover {
       box-shadow: 
         inset 8px 8px 16px var(--neumorphism-shadow-dark),
         inset -8px -8px 16px var(--neumorphism-shadow-light);
     }
-    
-    /* Special style for tall buttons like enter */
-    .key.tall-key {
-      border-radius: 32px !important;
-      aspect-ratio: auto;
-    }
-    .content-with-keyboard {
-      padding-bottom: calc(var(--keyboard-height) + env(safe-area-inset-bottom));
-    }
+    .key.tall-key { border-radius: 32px !important; aspect-ratio: auto; }
+    .content-with-keyboard { padding-bottom: calc(var(--keyboard-height) + env(safe-area-inset-bottom)); }
     .keyboard-fixed {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: env(safe-area-inset-bottom);
+      position: fixed; left: 0; right: 0; bottom: env(safe-area-inset-bottom);
       background: var(--neumorphism-bg);
-      max-height: 48vh;
-      overflow: auto;
-      box-shadow: 
-        0 -8px 25px rgba(174, 174, 192, 0.3),
-        0 -4px 15px rgba(255, 255, 255, 0.5);
+      max-height: 48vh; overflow: auto;
+      box-shadow: 0 -8px 25px rgba(174, 174, 192, 0.3), 0 -4px 15px rgba(255, 255, 255, 0.5);
       z-index: 60;
     }
-
     .keyboard-fixed .mx-2 { margin-left: 0.5rem; margin-right: 0.5rem; }
-
-    @media (max-width:420px) {
-      .keyboard-fixed .grid > button, .keyboard-fixed .grid > div { min-width: 52px; }
-    }
-    
+    @media (max-width:420px) { .keyboard-fixed .grid > button, .keyboard-fixed .grid > div { min-width: 52px; } }
     .home-indicator { 
-      height: 6px; 
-      width: 140px; 
-      max-width: 34vw; 
-      background: var(--neumorphism-bg);
+      height: 6px; width: 140px; max-width: 34vw; background: var(--neumorphism-bg);
       border-radius: 999px;
-      box-shadow: 
-        inset 6px 6px 12px var(--neumorphism-shadow-dark),
-        inset -6px -6px 12px var(--neumorphism-shadow-light);
+      box-shadow: inset 6px 6px 12px var(--neumorphism-shadow-dark), inset -6px -6px 12px var(--neumorphism-shadow-light);
     }
-    
     .bottom-icon { 
-      width: 48px; 
-      height: 48px;
-      background: var(--neumorphism-bg);
-      box-shadow: 
-        inset 8px 8px 16px var(--neumorphism-shadow-dark),
-        inset -8px -8px 16px var(--neumorphism-shadow-light);
-      color: #5a5a6b;
-      transition: all 0.15s ease;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 48px; height: 48px; background: var(--neumorphism-bg);
+      box-shadow: inset 8px 8px 16px var(--neumorphism-shadow-dark), inset -8px -8px 16px var(--neumorphism-shadow-light);
+      color: #5a5a6b; transition: all 0.15s ease; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
     }
-    
     .bottom-icon:active {
-      background: #5a5a6b;
-      color: var(--neumorphism-bg);
-      box-shadow: 
-        4px 4px 8px var(--neumorphism-shadow-dark),
-        -4px -4px 8px var(--neumorphism-shadow-light);
+      background: #5a5a6b; color: var(--neumorphism-bg);
+      box-shadow: 4px 4px 8px var(--neumorphism-shadow-dark), -4px -4px 8px var(--neumorphism-shadow-light);
     }
-    
     .bottom-icon:hover {
-      box-shadow: 
-        inset 6px 6px 12px var(--neumorphism-shadow-dark),
-        inset -6px -6px 12px var(--neumorphism-shadow-light);
+      box-shadow: inset 6px 6px 12px var(--neumorphism-shadow-dark), inset -6px -6px 12px var(--neumorphism-shadow-light);
     }
-    
-    /* Content area - flat design */
     .content-area {
       background: var(--neumorphism-bg);
       border-radius: 20px;
       border: 1px solid rgba(174, 174, 192, 0.2);
     }
-    
-    /* Prevent mobile keyboard from appearing */
     #editor {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-      caret-color: #5a5a6b;
-      color: #5a5a6b;
-      background: transparent;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      position: relative;
+      -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+      caret-color: #5a5a6b; color: #5a5a6b; background: transparent;
+      white-space: pre-wrap; word-wrap: break-word; position: relative;
     }
-    
-    /* Pseudo cursor */
-    .pseudo-cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1.2em;
-      background-color: #5a5a6b;
-      animation: cursor-blink 1s infinite;
-      vertical-align: text-bottom;
-      margin: 0 1px;
-    }
-    
-    @keyframes cursor-blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-    
-    /* Flick input UI */
+    .pseudo-cursor { display: inline-block; width: 2px; height: 1.2em; background-color: #5a5a6b; animation: cursor-blink 1s infinite; vertical-align: text-bottom; margin: 0 1px; }
+    @keyframes cursor-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
     .flick-popup {
-      position: absolute;
+      position: absolute; background: var(--neumorphism-bg); border-radius: 20px;
+      box-shadow: 8px 8px 16px var(--neumorphism-shadow-dark), -8px -8px 16px var(--neumorphism-shadow-light);
+      padding: 16px; font-size: 18px; color: #5a5a6b; font-weight: 600; z-index: 1000; pointer-events: none;
+      transform: translate(-50%, -120%); opacity: 0; transition: opacity 0.15s ease; min-width: 140px; text-align: center;
+    }
+    .flick-popup.show { opacity: 1; }
+    .flick-layout { display: grid; grid-template-areas: ". up ." "left center right" ". down ."; gap: 12px; align-items: center; justify-items: center; }
+    .flick-char { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;
       background: var(--neumorphism-bg);
-      border-radius: 20px;
-      box-shadow: 
-        8px 8px 16px var(--neumorphism-shadow-dark),
-        -8px -8px 16px var(--neumorphism-shadow-light);
-      padding: 16px;
-      font-size: 18px;
-      color: #5a5a6b;
-      font-weight: 600;
-      z-index: 1000;
-      pointer-events: none;
-      transform: translate(-50%, -120%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-      min-width: 140px;
-      text-align: center;
-    }
-    
-    .flick-popup.show {
-      opacity: 1;
-    }
-    
-    .flick-layout {
-      display: grid;
-      grid-template-areas: 
-        ". up ."
-        "left center right"
-        ". down .";
-      gap: 12px;
-      align-items: center;
-      justify-items: center;
-    }
-    
-    .flick-char {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-      background: var(--neumorphism-bg);
-      box-shadow: 
-        inset 4px 4px 8px var(--neumorphism-shadow-dark),
-        inset -4px -4px 8px var(--neumorphism-shadow-light);
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .flick-char.center { 
-      grid-area: center; 
-      width: 44px;
-      height: 44px;
-      background: var(--neumorphism-bg);
-      box-shadow: 
-        inset 6px 6px 12px var(--neumorphism-shadow-dark),
-        inset -6px -6px 12px var(--neumorphism-shadow-light);
-      font-size: 20px;
-      font-weight: 700;
-    }
-    .flick-char.up { grid-area: up; }
-    .flick-char.left { grid-area: left; }
-    .flick-char.right { grid-area: right; }
-    .flick-char.down { grid-area: down; }
-    
-    .flick-char.active {
-      background: #5a5a6b;
-      color: var(--neumorphism-bg);
-      transform: scale(1.15);
-      box-shadow: 
-        4px 4px 8px var(--neumorphism-shadow-dark),
-        -4px -4px 8px var(--neumorphism-shadow-light);
-    }
-    
-    /* Hide mobile keyboard completely */
-    input[readonly], textarea[readonly] {
-      pointer-events: none;
-    }
-    
+      box-shadow: inset 4px 4px 8px var(--neumorphism-shadow-dark), inset -4px -4px 8px var(--neumorphism-shadow-light);
+      font-size: 16px; font-weight: 600; }
+    .flick-char.center { grid-area: center; width: 44px; height: 44px; background: var(--neumorphism-bg);
+      box-shadow: inset 6px 6px 12px var(--neumorphism-shadow-dark), inset -6px -6px 12px var(--neumorphism-shadow-light);
+      font-size: 20px; font-weight: 700; }
+    .flick-char.up { grid-area: up; } .flick-char.left { grid-area: left; } .flick-char.right { grid-area: right; } .flick-char.down { grid-area: down; }
+    .flick-char.active { background: #5a5a6b; color: var(--neumorphism-bg); transform: scale(1.15);
+      box-shadow: 4px 4px 8px var(--neumorphism-shadow-dark), -4px -4px 8px var(--neumorphism-shadow-light); }
+    input[readonly], textarea[readonly] { pointer-events: none; }
     @media (max-width: 768px) {
-      #editor {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
+      #editor { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     }
   </style>
 </head>
@@ -315,7 +176,7 @@
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/></svg>
           </button>
 
-        <button aria-label="mic" class="rounded-full grid place-items-center text-xl bottom-icon" style="padding:6px">
+          <button aria-label="mic" class="rounded-full grid place-items-center text-xl bottom-icon" style="padding:6px">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v11"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 21v2"/></svg>
           </button>
         </div>
@@ -323,62 +184,181 @@
     </div>
   </div>
 
+  <!-- 🐞 Debug dock (初期は閉じている) -->
+  <div id="debugDock" class="fixed z-[70] right-3" style="bottom: calc(var(--keyboard-height) + 8px);">
+    <div class="flex justify-end">
+      <button id="btnDebugToggle" class="rounded-full px-3 py-2 text-sm shadow bg-white/80 backdrop-blur hover:bg-white border border-gray-300 flex items-center gap-1">
+        🐞 <span class="hidden sm:inline">Debug</span>
+      </button>
+    </div>
+    <div id="debugPanel" class="hidden mt-2 w-[min(92vw,680px)] max-h-[50vh] overflow-hidden rounded-xl border border-gray-300 bg-white/90 backdrop-blur shadow-lg">
+      <div class="flex items-center gap-2 p-2 border-b bg-gray-50">
+        <button id="btnConnect"   class="px-3 py-1.5 rounded border bg-white hover:bg-gray-100">🔗 Connect</button>
+        <button id="btnDisconnect" class="px-3 py-1.5 rounded border bg-white hover:bg-gray-100" disabled>🔌 Disconnect</button>
+        <button id="btnClearLog" class="ml-auto px-3 py-1.5 rounded border bg-white hover:bg-gray-100">🧹 Clear</button>
+      </div>
+      <pre id="log" class="p-2 text-xs leading-5 h-[38vh] overflow-auto whitespace-pre-wrap"></pre>
+      <div class="p-2 text-xs text-gray-600 border-t">
+        State: <span id="bleState">Idle</span>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ====== Web Bluetooth (NUS) ======
+    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // write*/M5へ
+    const TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // notify/M5→Web
+
+    let device=null, server=null, service=null, rxChar=null, txChar=null;
+    let lastSendAt = 0;             // 送信デバウンス用
+    const SEND_DEBOUNCE_MS = 40;    // 最短40ms間隔
+
+    // Debug UI
+    const $ = (id)=>document.getElementById(id);
+    const logEl = $('log');
+    function log(...args){
+      const ts = new Date().toLocaleTimeString();
+      const line = `[${ts}] ${args.join(' ')}`;
+      logEl.textContent += line + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(...args);
+    }
+    function setState(s){ $('bleState').textContent = s; }
+    (function setupDebug(){
+      const panel = $('debugPanel');
+      $('btnDebugToggle').onclick = ()=> panel.classList.toggle('hidden');
+      $('btnClearLog').onclick = ()=> logEl.textContent='';
+    })();
+
+    // 書き込み方式を自動選択
+    async function writeAuto(characteristic, bytes, label=''){
+      const p = characteristic.properties || {};
+      try {
+        if (p.writeWithoutResponse && characteristic.writeValueWithoutResponse) {
+          await characteristic.writeValueWithoutResponse(bytes);
+          log('➡️ (wnr)', label);
+          return true;
+        }
+      } catch(e){ log('⚠️ wnr failed:', e.message || e); }
+      try {
+        if (p.write && characteristic.writeValue) {
+          await characteristic.writeValue(bytes);
+          log('➡️ (ack)', label);
+          return true;
+        }
+      } catch(e){ log('⚠️ write failed:', e.message || e); }
+      log('❌ No supported write method');
+      return false;
+    }
+
+    async function connectBLE(){
+      try{
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ services: [SERVICE_UUID] }],
+          optionalServices: [SERVICE_UUID]
+        });
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+
+        server  = await device.gatt.connect();
+        service = await server.getPrimaryService(SERVICE_UUID);
+        rxChar  = await service.getCharacteristic(RX_UUID);
+        log('RX props:', JSON.stringify({
+          write: !!rxChar.properties.write,
+          wnr: !!rxChar.properties.writeWithoutResponse
+        }));
+
+        try {
+          txChar  = await service.getCharacteristic(TX_UUID);
+          await txChar.startNotifications();
+          txChar.addEventListener('characteristicvaluechanged',(e)=>{
+            const v = new TextDecoder().decode(e.target.value);
+            log('🔔', v);
+          });
+          log('TX notify: started');
+        } catch(e){ log('ℹ️ no TX notify:', e.message || e); }
+
+        $('btnDisconnect').disabled = false;
+        setState('Connected to ' + (device.name || '(no name)'));
+        log('✅ Connected to', device.name || '(no name)');
+
+        // 疎通確認
+        await writeAuto(rxChar, new TextEncoder().encode('PING'), 'PING');
+      }catch(e){
+        log('❌', e.message || e);
+        setState('Error / Not connected');
+      }
+    }
+    function onDisconnected(){
+      $('btnDisconnect').disabled = true;
+      setState('Disconnected');
+      log('💔 Disconnected');
+      rxChar = null; txChar = null; service = null; server = null; device = null;
+    }
+    function disconnectBLE(){
+      try{
+        if(device?.gatt?.connected){ device.gatt.disconnect(); }
+      }catch(e){ log('⚠️ disconnect error:', e.message || e); }
+    }
+    $('btnConnect').onclick = connectBLE;
+    $('btnDisconnect').onclick = disconnectBLE;
+
+    // キー押下で「ON」送信（デバウンス付き）
+    async function triggerHaptic(){
+      const now = performance.now();
+      if (now - lastSendAt < SEND_DEBOUNCE_MS) return;
+      lastSendAt = now;
+
+      if (!rxChar) {
+        // 未接続時は端末のバイブを軽く鳴らしてフィードバック（任意）
+        if (navigator.vibrate) navigator.vibrate(10);
+        log('⚠️ Not connected; local vibrate fallback');
+        return;
+      }
+      await writeAuto(rxChar, new TextEncoder().encode('ON'), 'ON');
+    }
+  </script>
+
+  <script>
+    // ====== 既存キーボード制御 + 振動トリガー組み込み ======
     (function(){
       const editor = document.getElementById('editor');
       if(!editor) return;
       editor.setAttribute('role','textbox');
-      
+
       // Prevent mobile keyboard from appearing
       editor.setAttribute('readonly', 'readonly');
       editor.setAttribute('inputmode', 'none');
       editor.style.caretColor = 'transparent';
-      
-      // Remove readonly when clicking to allow contenteditable functionality
+
       editor.addEventListener('click', ()=> {
         editor.removeAttribute('readonly');
         editor.focus();
-        // Re-add readonly immediately to prevent keyboard
         setTimeout(() => {
           editor.setAttribute('readonly', 'readonly');
           updateDisplay(); // Refresh cursor display
         }, 10);
       });
-      
-      // Prevent default keyboard events
-      editor.addEventListener('keydown', (e) => {
-        e.preventDefault();
-        return false;
-      });
-      
-      editor.addEventListener('input', (e) => {
-        e.preventDefault();
-        return false;
-      });
-      
+      editor.addEventListener('keydown', (e) => { e.preventDefault(); return false; });
+      editor.addEventListener('input',  (e) => { e.preventDefault(); return false; });
+
       const keys = Array.from(document.querySelectorAll('.key'));
 
       // Pseudo cursor management
       let cursorPosition = 0;
       let flickPopup = null;
-      
-      // Create flick popup
+
       function createFlickPopup() {
         if (flickPopup) return flickPopup;
-        
         flickPopup = document.createElement('div');
         flickPopup.className = 'flick-popup';
         document.body.appendChild(flickPopup);
         return flickPopup;
       }
-      
       function showFlickUI(button, kanaString) {
         if (!kanaString) return;
-        
         const popup = createFlickPopup();
         const kanaChars = kanaString.split(',').map(s => s.trim());
-        
-        // Create flick layout
         popup.innerHTML = `
           <div class="flick-layout">
             <div class="flick-char up">${kanaChars[1] || ''}</div>
@@ -386,93 +366,53 @@
             <div class="flick-char center">${kanaChars[0] || ''}</div>
             <div class="flick-char right">${kanaChars[2] || ''}</div>
             <div class="flick-char down">${kanaChars[3] || ''}</div>
-          </div>
-        `;
-        
-        // Position popup above button
+          </div>`;
         const rect = button.getBoundingClientRect();
         popup.style.left = rect.left + rect.width / 2 + 'px';
-        popup.style.top = rect.top + 'px';
+        popup.style.top  = rect.top + 'px';
         popup.classList.add('show');
       }
-      
       function hideFlickUI() {
         if (flickPopup) {
           flickPopup.classList.remove('show');
-          // Clear active states
-          flickPopup.querySelectorAll('.flick-char').forEach(char => {
-            char.classList.remove('active');
-          });
+          flickPopup.querySelectorAll('.flick-char').forEach(char => char.classList.remove('active'));
         }
       }
-      
       function updateFlickDirection(dx, dy, threshold = 20) {
         if (!flickPopup) return;
-        
         const chars = flickPopup.querySelectorAll('.flick-char');
         chars.forEach(char => char.classList.remove('active'));
-        
         const adx = Math.abs(dx), ady = Math.abs(dy);
-        
         if (Math.max(adx, ady) >= threshold) {
           if (adx > ady) {
-            // Horizontal flick
-            if (dx > 0) {
-              flickPopup.querySelector('.flick-char.right')?.classList.add('active');
-            } else {
-              flickPopup.querySelector('.flick-char.left')?.classList.add('active');
-            }
+            (dx > 0 ? flickPopup.querySelector('.flick-char.right') : flickPopup.querySelector('.flick-char.left'))?.classList.add('active');
           } else {
-            // Vertical flick
-            if (dy < 0) {
-              flickPopup.querySelector('.flick-char.up')?.classList.add('active');
-            } else {
-              flickPopup.querySelector('.flick-char.down')?.classList.add('active');
-            }
+            (dy < 0 ? flickPopup.querySelector('.flick-char.up') : flickPopup.querySelector('.flick-char.down'))?.classList.add('active');
           }
         } else {
-          // Center (tap)
           flickPopup.querySelector('.flick-char.center')?.classList.add('active');
         }
       }
-      
       function updateDisplay() {
         const text = editor.textContent || '';
         const beforeCursor = text.substring(0, cursorPosition);
         const afterCursor = text.substring(cursorPosition);
-        
-        // Create display with pseudo cursor
         editor.innerHTML = '';
-        
         if (beforeCursor) {
           const beforeSpan = document.createElement('span');
           beforeSpan.textContent = beforeCursor;
           editor.appendChild(beforeSpan);
         }
-        
-        // Add pseudo cursor
         const cursor = document.createElement('span');
         cursor.className = 'pseudo-cursor';
         editor.appendChild(cursor);
-        
         if (afterCursor) {
           const afterSpan = document.createElement('span');
           afterSpan.textContent = afterCursor;
           editor.appendChild(afterSpan);
         }
-        
-        // If editor is empty, show cursor
-        if (!text) {
-          editor.appendChild(cursor);
-        }
+        if (!text) { editor.appendChild(cursor); }
       }
-
-      function placeCaretAtEnd(el){
-        const text = el.textContent || '';
-        cursorPosition = text.length;
-        updateDisplay();
-      }
-
       function appendText(t){
         const currentText = editor.textContent || '';
         const newText = currentText.substring(0, cursorPosition) + t + currentText.substring(cursorPosition);
@@ -480,7 +420,6 @@
         cursorPosition += t.length;
         updateDisplay();
       }
-
       function backspace(){
         if (cursorPosition > 0) {
           const currentText = editor.textContent || '';
@@ -490,88 +429,75 @@
           updateDisplay();
         }
       }
+      function insertLineBreak(){ appendText('\n'); }
 
-      function insertLineBreak(){
-        appendText('\n');
-      }
-
-      // Pointer-based flick detection
+      // Pointer-based flick detection + HAPTIC TRIGGER
       keys.forEach(k => {
         let start = null;
         k.style.touchAction = 'none';
-        
+
         k.addEventListener('pointerdown', e => {
           k.setPointerCapture(e.pointerId);
           start = {x: e.clientX, y: e.clientY};
-          
-          // Show flick UI for kana keys
           const kana = k.dataset.kana;
-          if (kana) {
-            showFlickUI(k, kana);
-          }
+          if (kana) showFlickUI(k, kana);
         });
-        
+
         k.addEventListener('pointermove', e => {
           if (!start) return;
           const dx = e.clientX - start.x;
           const dy = e.clientY - start.y;
-          
-          // Update flick direction visualization
           const kana = k.dataset.kana;
-          if (kana) {
-            updateFlickDirection(dx, dy);
-          }
+          if (kana) updateFlickDirection(dx, dy);
         });
-        
-        k.addEventListener('pointerup', e => {
+
+        k.addEventListener('pointerup', async e => {
           if(!start) return;
-          
-          // Hide flick UI
+
           hideFlickUI();
-          
+
           const dx = e.clientX - start.x;
           const dy = e.clientY - start.y;
           const adx = Math.abs(dx), ady = Math.abs(dy);
           const threshold = 20; // px
           const kana = k.dataset.kana;
           const action = k.dataset.action;
+
+          let didInput = false;
+
           if(action){
-            // handle simple actions explicitly
             switch(action){
-              case 'backspace': backspace(); break;
-              case 'space': appendText(' '); break;
-              case 'enter': insertLineBreak(); break;
-              case 'emoji': appendText('😊'); break;
-              case 'punct': appendText('、'); break;
+              case 'backspace': backspace(); didInput = true; break;
+              case 'space': appendText(' '); didInput = true; break;
+              case 'enter': insertLineBreak(); didInput = true; break;
+              case 'emoji': appendText('😊'); didInput = true; break;
+              case 'punct': appendText('、'); didInput = true; break;
               default: break;
             }
             start = null;
+            if (didInput) { await triggerHaptic(); }
             return;
           }
+
           if(kana){
             const parts = kana.split(',').map(s=>s.trim()).filter(Boolean);
             let idx = 0; // tap
             if(Math.max(adx, ady) >= threshold){
-              if(adx > ady){ // horizontal
-                idx = dx > 0 ? 2 : 4;
-              } else { // vertical
-                idx = dy < 0 ? 1 : 3; // up : down
-              }
+              if(adx > ady) idx = dx > 0 ? 2 : 4; // right : left
+              else          idx = dy < 0 ? 1 : 3; // up : down
             }
-            if(idx >= parts.length){
-              // fallback to nearest available
-              idx = Math.min(parts.length-1, idx);
-            }
+            if(idx >= parts.length) idx = Math.min(parts.length-1, idx);
             const char = parts[idx] || parts[0];
             appendText(char);
+            didInput = true;
           } else {
-            // if no kana and no action, treat as click
             const text = k.textContent.trim();
-            if(text) appendText(text);
+            if(text){ appendText(text); didInput = true; }
           }
           start = null;
+          if (didInput) { await triggerHaptic(); }
         });
-        
+
         k.addEventListener('pointercancel', () => {
           start = null;
           hideFlickUI();
@@ -583,40 +509,32 @@
       editor.textContent = initialText;
       cursorPosition = initialText.length;
       updateDisplay();
-      
+
       // Initialize flick popup
       createFlickPopup();
-      
-      // Ensure editor initially focused so typing works
+
+      // Keep editor "focused" behavior without mobile keyboard
       editor.removeAttribute('readonly');
-      setTimeout(() => {
-        editor.setAttribute('readonly', 'readonly');
-      }, 50);
+      setTimeout(() => { editor.setAttribute('readonly', 'readonly'); }, 50);
     })();
   </script>
 
   <script>
-    // Measure keyboard and set CSS variable so page content isn't hidden
+    // ====== レイアウト調整：キーボード高さを CSS 変数へ ======
     (function(){
       const kb = document.getElementById('keyboard');
       const content = document.querySelector('.px-5');
       if(!kb || !content) return;
-      // mark content area to receive bottom padding
       content.classList.add('content-with-keyboard');
 
       function updateKeyboardHeight(){
-        // the visible height of keyboard (use getBoundingClientRect to account for safe insets)
         const h = Math.round(kb.getBoundingClientRect().height);
         document.documentElement.style.setProperty('--keyboard-height', h + 'px');
       }
-
-      // update on load and resize
       window.addEventListener('load', updateKeyboardHeight);
       window.addEventListener('resize', updateKeyboardHeight);
-      // watch for DOM changes inside keyboard (eg. dynamic panels)
       const mo = new MutationObserver(()=> updateKeyboardHeight());
       mo.observe(kb, { childList: true, subtree: true, attributes: true, characterData: true });
-      // initial call
       updateKeyboardHeight();
     })();
   </script>

@@ -1,4 +1,3 @@
-<!-- === ble-haptic.html (Service-UUID filter + write with response + PING after connect) === -->
 <!doctype html>
 <meta charset="utf-8" />
 <title>Haptic Control (Web Bluetooth)</title>
@@ -9,24 +8,28 @@
   h1 { font-size: 20px; margin: 0 0 12px; }
   button { font-size: 16px; padding: 10px 14px; margin: 6px 8px 6px 0; border-radius: 8px; border: 1px solid #ccc;
            background: #fafafa; cursor: pointer; }
-  #log { white-space: pre-wrap; border: 1px solid #ddd; border-radius: 8px; padding: 10px; height: 220px; overflow:auto; }
+  #log { white-space: pre-wrap; border: 1px solid #ddd; border-radius: 8px; padding: 10px; height: 240px; overflow:auto; }
 </style>
 
 <h1>🟦 M5 Haptic (Web Bluetooth)</h1>
 <p>
   <button id="btnConnect">🔗 Connect</button>
-  <button id="btnPulse">💥 PULSE 200ms</button>
-  <button id="btnOn">▶️ ON (click once)</button>
-  <button id="btnOff">⏹ OFF</button>
+  <button id="btnDiag" disabled>🧪 Diagnose & PING all</button>
+</p>
+<p>
+  <button id="btnPulse" disabled>💥 PULSE 200ms</button>
+  <button id="btnOn" disabled>▶️ ON (click once)</button>
+  <button id="btnOff" disabled>⏹ OFF</button>
 </p>
 <div id="log"></div>
 
 <script>
   const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-  const RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // write
-  const TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // notify (optional)
+  const RX_UUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e'; // 期待するRX
+  const TX_UUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // 期待するTX(Notify)
 
   let device, server, service, rxChar, txChar;
+  let writableChars = []; // {ch, uuid, props}
 
   const log = (...args) => {
     const el = document.getElementById('log');
@@ -35,46 +38,122 @@
     console.log(...args);
   };
 
+  function setEnabled(v) {
+    document.getElementById('btnDiag').disabled = !v;
+    document.getElementById('btnPulse').disabled = !v;
+    document.getElementById('btnOn').disabled = !v;
+    document.getElementById('btnOff').disabled = !v;
+  }
+
+  async function writeAuto(ch, bytes, label) {
+    const p = ch.properties || {};
+    try {
+      if (p.writeWithoutResponse && ch.writeValueWithoutResponse) {
+        await ch.writeValueWithoutResponse(bytes);
+        log(`➡️ [${short(ch.uuid)}] (wnr):`, label);
+        return true;
+      }
+    } catch (e) {
+      log(`⚠️ [${short(ch.uuid)}] wnr failed:`, e.message || e);
+    }
+    try {
+      if (p.write && ch.writeValue) {
+        await ch.writeValue(bytes);
+        log(`➡️ [${short(ch.uuid)}] (ack):`, label);
+        return true;
+      }
+    } catch (e) {
+      log(`⚠️ [${short(ch.uuid)}] write failed:`, e.message || e);
+    }
+    log(`❌ [${short(ch.uuid)}] No supported write method`);
+    return false;
+  }
+
+  const enc = (s) => new TextEncoder().encode(s);
+  const short = (u) => (u || '').toLowerCase().replace(/.*-([0-9a-f]{4})$/, '$1');
+
   async function connect() {
     try {
       device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [SERVICE_UUID] }],  // ← サービスUUIDでフィルタ
+        filters: [{ services: [SERVICE_UUID] }],
         optionalServices: [SERVICE_UUID]
       });
       device.addEventListener('gattserverdisconnected', () => log('💔 Disconnected'));
 
       server  = await device.gatt.connect();
       service = await server.getPrimaryService(SERVICE_UUID);
-      rxChar  = await service.getCharacteristic(RX_UUID);
+
+      // 期待するRX/TXをまず試す
       try {
-        txChar  = await service.getCharacteristic(TX_UUID);
+        rxChar = await service.getCharacteristic(RX_UUID);
+        log('🔎 RX found:', RX_UUID);
+        log(`props(RX): write=${!!rxChar.properties.write}, wnr=${!!rxChar.properties.writeWithoutResponse}`);
+      } catch { log('ℹ️ RX not found by UUID; will scan all chars'); rxChar = null; }
+
+      try {
+        txChar = await service.getCharacteristic(TX_UUID);
         await txChar.startNotifications();
         txChar.addEventListener('characteristicvaluechanged', (e) => {
           const v = new TextDecoder().decode(e.target.value);
           log('🔔 Notify:', v);
         });
-      } catch (e) { log('ℹ️ no TX notify:', e.message || e); }
+        log('🔎 TX found & notifications started:', TX_UUID);
+      } catch (e) {
+        log('ℹ️ TX notify not available:', e.message || e);
+        txChar = null;
+      }
+
+      // サービス内の全キャラ列挙
+      const chars = await service.getCharacteristics();
+      writableChars = [];
+      log(`📜 Service has ${chars.length} characteristic(s):`);
+      for (const ch of chars) {
+        const p = ch.properties || {};
+        log(`  • ${ch.uuid}  [read=${!!p.read}, write=${!!p.write}, wnr=${!!p.writeWithoutResponse}, notify=${!!p.notify}]`);
+        if (p.write || p.writeWithoutResponse) {
+          writableChars.push({ ch, uuid: ch.uuid, props: p });
+        }
+      }
+
+      // RXが未確定なら、書ける候補から NUSの #0002 ライクを優先
+      if (!rxChar) {
+        const prefer = writableChars.find(x => /6e400002/i.test(x.uuid));
+        rxChar = (prefer || writableChars[0] || {}).ch || null;
+        if (rxChar) log('✅ RX auto-selected:', rxChar.uuid);
+      }
 
       log('✅ Connected to', device.name || '(no name)');
-      // 疎通確認：PING → PONG の往復確認
-      await rxChar.writeValue(new TextEncoder().encode('PING'));
-      log('➡️ Send: PING');
+      setEnabled(true);
+
+      // 疎通: 期待RXにPING、さらに総当たりは「Diagnose」で実行
+      if (rxChar) await writeAuto(rxChar, enc('PING'), 'PING');
+      else log('❌ No writable characteristic picked as RX.');
+
     } catch (e) {
       log('❌', e.message || e);
     }
   }
 
-  async function send(cmd) {
-    if (!rxChar) { log('⚠️ Not connected'); return; }
-    try {
-      await rxChar.writeValue(new TextEncoder().encode(cmd)); // 応答ありで確実に
-      log('➡️ Send (ack):', cmd);
-    } catch (err) {
-      log('❌ write failed:', err.message || err);
+  // 総当たりテスト：全ての「書ける」キャラへ PING と ON を送る
+  async function diagnose() {
+    if (!writableChars.length) { log('⚠️ No writable characteristics found'); return; }
+    for (const { ch, uuid } of writableChars) {
+      log(`🧪 Try write to ${uuid}`);
+      await writeAuto(ch, enc('PING'), 'PING');
+      await new Promise(r => setTimeout(r, 150));
+      await writeAuto(ch, enc('ON'), 'ON');
+      await new Promise(r => setTimeout(r, 150));
     }
+    log('🧪 Done.');
+  }
+
+  async function send(cmd) {
+    if (!rxChar) { log('⚠️ RX not selected. Use Diagnose to find one.'); return; }
+    await writeAuto(rxChar, enc(cmd), cmd);
   }
 
   document.getElementById('btnConnect').onclick = connect;
+  document.getElementById('btnDiag').onclick    = diagnose;
   document.getElementById('btnPulse').onclick   = () => send('P200');
   document.getElementById('btnOn').onclick      = () => send('ON');
   document.getElementById('btnOff').onclick     = () => send('OFF');
