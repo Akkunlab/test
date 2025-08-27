@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        fontFamily: {
+          sans: ['"SF Pro Text"', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Hiragino Kaku Gothic ProN', 'Meiryo', 'sans-serif']
+        }
+      }
+    }
+  </script>
+  <style>
+    .key { box-shadow: inset 0 -1px 0 0 rgba(0,0,0,.08); }
+    .key:active { transform: translateY(1px); filter: brightness(.96); }
+
+    :root { --keyboard-height: 260px; }
+    .content-with-keyboard { padding-bottom: calc(var(--keyboard-height) + env(safe-area-inset-bottom)); }
+    .keyboard-fixed {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: env(safe-area-inset-bottom);
+      background: linear-gradient(#f3f4f6, rgba(243,244,246,0.95));
+      max-height: 48vh;
+      overflow: auto;
+      box-shadow: 0 -6px 18px rgba(0,0,0,0.08);
+      z-index: 60;
+    }
+
+    .keyboard-fixed .mx-2 { margin-left: 0.5rem; margin-right: 0.5rem; }
+
+    @media (max-width:420px) {
+      .keyboard-fixed .grid > button, .keyboard-fixed .grid > div { min-width: 44px; }
+    }
+    .home-indicator { height: 6px; width: 140px; max-width: 34vw; background: rgba(0,0,0,0.18); border-radius: 999px; }
+    .bottom-icon { width: 40px; height: 40px; }
+  </style>
+</head>
+<body class="min-h-screen bg-white">
+
+  <div class="iphone relative min-h-screen w-full bg-white overflow-auto">
+
+    <!-- Content area -->
+    <div class="px-5">
+      <div class="mt-0 h-[540px] bg-white w-full">
+        <div class="p-6 text-[22px] leading-8 tracking-wide">
+          <div id="editor" contenteditable="true" class="min-h-[28px] outline-none break-words">こんにちは</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kana keyboard -->
+    <div id="keyboard" class="keyboard-fixed bg-neutral-200/70 pt-2 pb-3">
+      <div class="mx-2 grid grid-cols-[72px_repeat(3,minmax(0,1fr))_72px] gap-2">
+
+        <!-- left column -->
+        <button class="h-14 rounded-xl bg-neutral-300 key text-neutral-700 text-xl">→</button>
+
+         <!-- row 1 -->
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="あ,い,う,え,お">あ</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="か,き,く,け,こ">か</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="さ,し,す,せ,そ">さ</button>
+        <button data-action="backspace" class="h-14 rounded-xl bg-neutral-300 key text-2xl">⌫</button>
+
+         <!-- left column row2 -->
+        <button class="h-14 rounded-xl bg-neutral-300 key text-neutral-700 text-xl" data-action="toggle">↺</button>
+
+         <!-- row 2 -->
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="た,ち,つ,て,と">た</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="な,に,ぬ,ね,の">な</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="は,ひ,ふ,へ,ほ">は</button>
+        <button class="h-14 rounded-xl bg-neutral-300 key text-lg leading-tight" data-action="space">空白</button>
+
+         <!-- (delete continues) -->
+
+         <!-- left column row3 -->
+        <button class="h-14 rounded-xl bg-neutral-300 key text-neutral-700 text-xl" data-action="mode">ABC</button>
+        <!-- row 3 -->
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="ま,み,む,め,も">ま</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="や,ゆ,よ">や</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="ら,り,る,れ,ろ">ら</button>
+        <button class="row-span-2 h-[116px] rounded-xl bg-neutral-300 key text-xl" data-action="enter">改行</button>
+
+         <!-- left column row4 -->
+        <button class="h-14 rounded-xl bg-neutral-300 key text-2xl" data-action="emoji">😊</button>
+        <!-- row 4 -->
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="^">^_^</button>
+        <button class="h-14 rounded-xl bg-white key text-2xl" data-kana="わ,を,ん">わ</button>
+        <button class="h-14 rounded-xl bg-white key text-xl" data-action="punct">、？！</button>
+
+      </div>
+
+      <!-- bottom controls -->
+      <div class="mx-2 mt-2">
+        <div class="flex items-center justify-between px-2">
+          <button aria-label="language" class="rounded-full bg-transparent grid place-items-center text-xl bottom-icon" style="padding:6px">
+            <!-- globe svg -->
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/></svg>
+          </button>
+
+        <div class="grid place-items-center" style="flex:1">
+            <div class="home-indicator"></div>
+          </div>
+
+        <button aria-label="mic" class="rounded-full bg-transparent grid place-items-center text-xl bottom-icon" style="padding:6px">
+            <!-- mic svg -->
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v11"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 21v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const editor = document.getElementById('editor');
+      if(!editor) return;
+      editor.setAttribute('role','textbox');
+      editor.addEventListener('click', ()=> editor.focus());
+      const keys = Array.from(document.querySelectorAll('.key'));
+
+      function placeCaretAtEnd(el){
+        el.focus();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+
+      function appendText(t){
+        // simple append to end
+        editor.textContent = (editor.textContent || '') + t;
+        placeCaretAtEnd(editor);
+      }
+
+      function backspace(){
+        const s = editor.textContent || '';
+        editor.textContent = s.slice(0, -1);
+        placeCaretAtEnd(editor);
+      }
+
+      function insertLineBreak(){
+        const sel = window.getSelection();
+        if(!sel || !sel.rangeCount){
+          appendText('\n');
+          return;
+        }
+        const range = sel.getRangeAt(0);
+
+        // Find a direct child node of editor that contains the caret (or fallback to last child)
+        let node = range.startContainer;
+        while(node && node.parentNode && node.parentNode !== editor){
+          node = node.parentNode;
+        }
+        if(!node) node = editor.lastChild;
+
+        // Create a new block-level line and insert it after the found node
+        const newLine = document.createElement('div');
+        newLine.appendChild(document.createElement('br'));
+
+        if(node && node.parentNode === editor){
+          if(node.nextSibling) editor.insertBefore(newLine, node.nextSibling);
+          else editor.appendChild(newLine);
+        } else {
+          editor.appendChild(newLine);
+        }
+
+        // Place caret inside the new line
+        const textNode = document.createTextNode('');
+        newLine.appendChild(textNode);
+        const newRange = document.createRange();
+        newRange.setStart(textNode, 0);
+        newRange.collapse(true);
+
+        // focus and set selection in next frame to avoid reflow issues
+        editor.focus();
+        requestAnimationFrame(()=>{
+          const s = window.getSelection();
+          if(!s) return;
+          s.removeAllRanges();
+          s.addRange(newRange);
+        });
+      }
+
+      // Pointer-based flick detection
+      keys.forEach(k => {
+        let start = null;
+        k.style.touchAction = 'none';
+        k.addEventListener('pointerdown', e => {
+          k.setPointerCapture(e.pointerId);
+          start = {x: e.clientX, y: e.clientY};
+        });
+        k.addEventListener('pointerup', e => {
+          if(!start) return;
+          const dx = e.clientX - start.x;
+          const dy = e.clientY - start.y;
+          const adx = Math.abs(dx), ady = Math.abs(dy);
+          const threshold = 20; // px
+          const kana = k.dataset.kana;
+          const action = k.dataset.action;
+          if(action){
+            // handle simple actions explicitly
+            switch(action){
+              case 'backspace': backspace(); break;
+              case 'space': appendText(' '); break;
+              case 'enter': insertLineBreak(); break;
+              case 'emoji': appendText('😊'); break;
+              case 'punct': appendText('、'); break;
+              default: break;
+            }
+            start = null;
+            return;
+          }
+          if(kana){
+            const parts = kana.split(',').map(s=>s.trim()).filter(Boolean);
+            let idx = 0; // tap
+            if(Math.max(adx, ady) >= threshold){
+              if(adx > ady){ // horizontal
+                idx = dx > 0 ? 2 : 4;
+              } else { // vertical
+                idx = dy < 0 ? 1 : 3; // up : down
+              }
+            }
+            if(idx >= parts.length){
+              // fallback to nearest available
+              idx = Math.min(parts.length-1, idx);
+            }
+            const char = parts[idx] || parts[0];
+            appendText(char);
+          } else {
+            // if no kana and no action, treat as click
+            const text = k.textContent.trim();
+            if(text) appendText(text);
+          }
+          start = null;
+        });
+        k.addEventListener('pointercancel', ()=> start = null);
+      });
+
+      // Ensure editor initially focused so typing works
+      placeCaretAtEnd(editor);
+    })();
+  </script>
+
+  <script>
+    // Measure keyboard and set CSS variable so page content isn't hidden
+    (function(){
+      const kb = document.getElementById('keyboard');
+      const content = document.querySelector('.px-5');
+      if(!kb || !content) return;
+      // mark content area to receive bottom padding
+      content.classList.add('content-with-keyboard');
+
+      function updateKeyboardHeight(){
+        // the visible height of keyboard (use getBoundingClientRect to account for safe insets)
+        const h = Math.round(kb.getBoundingClientRect().height);
+        document.documentElement.style.setProperty('--keyboard-height', h + 'px');
+      }
+
+      // update on load and resize
+      window.addEventListener('load', updateKeyboardHeight);
+      window.addEventListener('resize', updateKeyboardHeight);
+      // watch for DOM changes inside keyboard (eg. dynamic panels)
+      const mo = new MutationObserver(()=> updateKeyboardHeight());
+      mo.observe(kb, { childList: true, subtree: true, attributes: true, characterData: true });
+      // initial call
+      updateKeyboardHeight();
+    })();
+  </script>
+
+</body>
+</html>
