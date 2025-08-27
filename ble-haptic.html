@@ -1,17 +1,22 @@
+<!-- === ble-haptic.html (Service-UUID filter + write with response + PING after connect) === -->
 <!doctype html>
 <meta charset="utf-8" />
-<title>Haptic Control</title>
+<title>Haptic Control (Web Bluetooth)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-  body { font-family: system-ui, sans-serif; padding: 24px; }
-  button { font-size: 16px; padding: 10px 14px; margin: 6px; }
-  #log { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 160px; overflow:auto; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 24px; line-height: 1.4; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  button { font-size: 16px; padding: 10px 14px; margin: 6px 8px 6px 0; border-radius: 8px; border: 1px solid #ccc;
+           background: #fafafa; cursor: pointer; }
+  #log { white-space: pre-wrap; border: 1px solid #ddd; border-radius: 8px; padding: 10px; height: 220px; overflow:auto; }
 </style>
 
-<h1>M5 Haptic (Web Bluetooth)</h1>
+<h1>🟦 M5 Haptic (Web Bluetooth)</h1>
 <p>
   <button id="btnConnect">🔗 Connect</button>
-  <button id="btnPulse">💥 Pulse 200ms</button>
-  <button id="btnOn">▶️ ON</button>
+  <button id="btnPulse">💥 PULSE 200ms</button>
+  <button id="btnOn">▶️ ON (click once)</button>
   <button id="btnOff">⏹ OFF</button>
 </p>
 <div id="log"></div>
@@ -32,18 +37,15 @@
 
   async function connect() {
     try {
-      // ✅ 修正: filters か acceptAllDevices のどちらかだけを使う
       device = await navigator.bluetooth.requestDevice({
-        filters: [{ namePrefix: 'M5-' }],   // ← M5-Haptic だけ出す
+        filters: [{ services: [SERVICE_UUID] }],  // ← サービスUUIDでフィルタ
         optionalServices: [SERVICE_UUID]
       });
-
       device.addEventListener('gattserverdisconnected', () => log('💔 Disconnected'));
 
       server  = await device.gatt.connect();
       service = await server.getPrimaryService(SERVICE_UUID);
       rxChar  = await service.getCharacteristic(RX_UUID);
-
       try {
         txChar  = await service.getCharacteristic(TX_UUID);
         await txChar.startNotifications();
@@ -51,9 +53,12 @@
           const v = new TextDecoder().decode(e.target.value);
           log('🔔 Notify:', v);
         });
-      } catch (_) { /* TX notify が無い場合は無視 */ }
+      } catch (e) { log('ℹ️ no TX notify:', e.message || e); }
 
-      log('✅ Connected');
+      log('✅ Connected to', device.name || '(no name)');
+      // 疎通確認：PING → PONG の往復確認
+      await rxChar.writeValue(new TextEncoder().encode('PING'));
+      log('➡️ Send: PING');
     } catch (e) {
       log('❌', e.message || e);
     }
@@ -61,17 +66,11 @@
 
   async function send(cmd) {
     if (!rxChar) { log('⚠️ Not connected'); return; }
-    const data = new TextEncoder().encode(cmd);
     try {
-      await rxChar.writeValueWithoutResponse(data);
-      log('➡️ Send:', cmd);
-    } catch (e) {
-      try {
-        await rxChar.writeValue(data);
-        log('➡️ Send (ack):', cmd);
-      } catch (err) {
-        log('❌ write failed:', err.message || err);
-      }
+      await rxChar.writeValue(new TextEncoder().encode(cmd)); // 応答ありで確実に
+      log('➡️ Send (ack):', cmd);
+    } catch (err) {
+      log('❌ write failed:', err.message || err);
     }
   }
 
