@@ -127,6 +127,8 @@
       caret-color: #5a5a6b;
       color: #5a5a6b;
       background: transparent;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
     
     /* Hide mobile keyboard completely */
@@ -153,7 +155,7 @@
     <!-- Content area -->
     <div class="px-5">
       <div class="mt-0 h-[540px] w-full content-area">
-        <div class="p-6 text-[22px] leading-8 tracking-wide">
+        <div class="p-6 text-[24px] leading-8 tracking-wide">
           <div id="editor" contenteditable="true" class="min-h-[28px] outline-none break-words">こんにちは</div>
         </div>
       </div>
@@ -164,38 +166,38 @@
       <div class="mx-3 grid grid-cols-[70px_repeat(3,minmax(0,1fr))_70px] gap-3">
 
         <!-- left column -->
-        <button class="h-16 w-16 key text-xl">→</button>
+        <button class="h-16 w-16 key text-4xl">→</button>
 
          <!-- row 1 -->
-        <button class="h-16 w-16 key text-2xl" data-kana="あ,い,う,え,お">あ</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="か,き,く,け,こ">か</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="さ,し,す,せ,そ">さ</button>
-        <button data-action="backspace" class="h-16 w-16 key text-2xl">⌫</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="あ,い,う,え,お">あ</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="か,き,く,け,こ">か</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="さ,し,す,せ,そ">さ</button>
+        <button data-action="backspace" class="h-16 w-16 key text-4xl">⌫</button>
 
          <!-- left column row2 -->
-        <button class="h-16 w-16 key text-xl" data-action="toggle">↺</button>
+        <button class="h-16 w-16 key text-4xl" data-action="toggle">↺</button>
 
          <!-- row 2 -->
-        <button class="h-16 w-16 key text-2xl" data-kana="た,ち,つ,て,と">た</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="な,に,ぬ,ね,の">な</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="は,ひ,ふ,へ,ほ">は</button>
-        <button class="h-16 w-16 key text-lg leading-tight" data-action="space">空白</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="た,ち,つ,て,と">た</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="な,に,ぬ,ね,の">な</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="は,ひ,ふ,へ,ほ">は</button>
+        <button class="h-16 w-16 key text-3xl leading-tight" data-action="space">空白</button>
          <!-- left column row3 -->
-        <button class="h-16 w-16 key text-xl" data-action="mode">ABC</button>
+        <button class="h-16 w-16 key text-3xl" data-action="mode">ABC</button>
 
         <!-- row 3 -->
-        <button class="h-16 w-16 key text-2xl" data-kana="ま,み,む,め,も">ま</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="や,ゆ,よ">や</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="ら,り,る,れ,ろ">ら</button>
-        <button class="row-span-2 h-[140px] w-16 key tall-key text-xl" data-action="enter">改行</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="ま,み,む,め,も">ま</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="や,ゆ,よ">や</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="ら,り,る,れ,ろ">ら</button>
+        <button class="row-span-2 h-[140px] w-16 key tall-key text-4xl" data-action="enter">改行</button>
 
          <!-- left column row4 -->
-        <button class="h-16 w-16 key text-2xl" data-action="emoji">😊</button>
+        <button class="h-16 w-16 key text-4xl" data-action="emoji">😊</button>
 
         <!-- row 4 -->
-        <button class="h-16 w-16 key text-2xl" data-kana="^_^">^_^</button>
-        <button class="h-16 w-16 key text-2xl" data-kana="わ,を,ん">わ</button>
-        <button class="h-16 w-16 key text-xl" data-action="punct">、？！</button>
+        <button class="h-16 w-16 key text-3xl" data-kana="^_^">^_^</button>
+        <button class="h-16 w-16 key text-4xl" data-kana="わ,を,ん">わ</button>
+        <button class="h-16 w-16 key text-2xl" data-action="punct">、？！</button>
       </div>
 
       <!-- bottom controls -->
@@ -274,46 +276,10 @@
       }
 
       function insertLineBreak(){
-        const sel = window.getSelection();
-        if(!sel || !sel.rangeCount){
-          appendText('\n');
-          return;
-        }
-        const range = sel.getRangeAt(0);
-
-        // Find a direct child node of editor that contains the caret (or fallback to last child)
-        let node = range.startContainer;
-        while(node && node.parentNode && node.parentNode !== editor){
-          node = node.parentNode;
-        }
-        if(!node) node = editor.lastChild;
-
-        // Create a new block-level line and insert it after the found node
-        const newLine = document.createElement('div');
-        newLine.appendChild(document.createElement('br'));
-
-        if(node && node.parentNode === editor){
-          if(node.nextSibling) editor.insertBefore(newLine, node.nextSibling);
-          else editor.appendChild(newLine);
-        } else {
-          editor.appendChild(newLine);
-        }
-
-        // Place caret inside the new line
-        const textNode = document.createTextNode('');
-        newLine.appendChild(textNode);
-        const newRange = document.createRange();
-        newRange.setStart(textNode, 0);
-        newRange.collapse(true);
-
-        // focus and set selection in next frame to avoid reflow issues
-        editor.focus();
-        requestAnimationFrame(()=>{
-          const s = window.getSelection();
-          if(!s) return;
-          s.removeAllRanges();
-          s.addRange(newRange);
-        });
+        // Simple and reliable line break insertion
+        const currentText = editor.textContent || '';
+        editor.textContent = currentText + '\n';
+        placeCaretAtEnd(editor);
       }
 
       // Pointer-based flick detection
